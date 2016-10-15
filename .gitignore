@@ -11,3 +11,8 @@ ppx_fun.install
 ppx_fun.native
 ppx_expect
 ppx_lambda
+ppx_inline_test
+ppx_core-113.33.01+4.03
+ppx_hash
+/x.ml
+/y.ml
