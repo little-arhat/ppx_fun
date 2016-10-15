@@ -5,7 +5,7 @@ PREFIX = $(shell opam config var prefix)
 build:
 	cp pkg/META.in pkg/META
 	ocaml pkg/pkg.ml build
-	ln -s _build/bin/main.native ./ppx_fun.native
+	ln -fs _build/bin/main.native ./ppx_fun.native
 
 $(NAME).install:
 	$(MAKE) build
