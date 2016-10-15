@@ -1,0 +1,8 @@
+version = "${version}%"
+description = "shorthand syntax for anonymous functions"
+requires(-ppx_driver) = "ppx_core"
+exists_if = "ppx_fun.cma"
+archive(ppx_driver, byte) = "ppx_fun.cma"
+archive(ppx_driver, native) = "ppx_fun.cmxa"
+archive(ppx_driver, native, plugin) = "ppx_fun.cmxs"
+# ppxopt(-ppx_driver) = "./ppx_fun.cma"

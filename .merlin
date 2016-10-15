@@ -1,0 +1,5 @@
+fS src
+S test
+B _build/**
+PKG compiler-libs.common ppx_tools.metaquot ppx_core topkg
+FLG -w @A
