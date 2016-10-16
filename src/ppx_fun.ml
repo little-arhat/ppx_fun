@@ -93,7 +93,8 @@ let ppx_fun_expander_args
       ~loc ~path:_
       (func:Parsetree.expression)
       (args:(Asttypes.arg_label * Parsetree.expression) list) =
-  let prefix = "v" in
+  let line = loc.Location.loc_start.Lexing.pos_lnum in
+  let prefix = Printf.sprintf "l_%d_v" line in
   let (context, new_args) = replace_and_count_placeholders_in_args
                               prefix args in
   let inner = pexp_apply ~loc func new_args in
@@ -118,10 +119,8 @@ let ppx_fun_expander_args
 
 let ppx_fun_expander_drop
       ~loc ~path:_
-      (func:Parsetree.expression)
-      (args:(Asttypes.arg_label * Parsetree.expression) list) =
-  let inner = pexp_apply ~loc func args in
-  [%expr fun _ -> [%e inner]]
+      (expr:Parsetree.expression) =
+  [%expr fun _ -> [%e expr]]
 
 let ppx_fun_args =
   Extension.V2.declare "f"
@@ -133,8 +132,7 @@ let ppx_fun_args =
 let ppx_fun_drop =
   Extension.V2.declare "f_"
                        Extension.Context.expression
-                       Ast_pattern.(pstr (pstr_eval
-                                            (pexp_apply __ __) nil ^:: nil))
+                       Ast_pattern.(pstr (pstr_eval __ nil ^:: nil))
                        ppx_fun_expander_drop
 
 let extensions = [ppx_fun_args;
