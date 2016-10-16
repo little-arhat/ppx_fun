@@ -1,10 +1,12 @@
 NAME := ppx_fun
 PREFIX = $(shell opam config var prefix)
 
+test: build
+	ocaml pkg/pkg.ml test
 
 build:
 	cp pkg/META.in pkg/META
-	ocaml pkg/pkg.ml build
+	ocaml pkg/pkg.ml build --tests true
 	ln -fs _build/bin/main.native ./ppx_fun.native
 
 $(NAME).install:
@@ -36,4 +38,4 @@ release:
 # opam publish submit $(NAME_VERSION)
 # rm -rf $(NAME_VERSION)
 
-.PHONY: build
+.PHONY: test

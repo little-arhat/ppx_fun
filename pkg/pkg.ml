@@ -10,5 +10,5 @@ let () =
      Ok [ Pkg.lib "pkg/META";
          Pkg.lib ~exts:Exts.library "src/ppx_fun";
          Pkg.bin "bin/main" ~dst:"ppx_fun";
-         (* Pkg.test "test/test";  *)
+         Pkg.test "test/test";
      ]

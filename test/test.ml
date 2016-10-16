@@ -1,21 +1,33 @@
-(*---------------------------------------------------------------------------
-   Copyright (c) 2016 Roma Sokolov. All rights reserved.
-   Distributed under the ISC license, see terms at the end of the file.
-   %%NAME%% %%VERSION%%
-  ---------------------------------------------------------------------------*)
 
-(*---------------------------------------------------------------------------
-   Copyright (c) 2016 Roma Sokolov
+let () =
+  (* anonymous placeholder *)
+  let f1 = fun a -> a * 2 in
+  let fg1 = [%f __ * 2] in
+  assert  (f1 3 = fg1 3)
 
-   Permission to use, copy, modify, and/or distribute this software for any
-   purpose with or without fee is hereby granted, provided that the above
-   copyright notice and this permission notice appear in all copies.
+let () =
+  (* N anonymous placeholders *)
+  let f1 = fun a -> a * a in
+  let fg1 = [%f __ * __] in
+  assert (f1 3 = fg1 3)
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-   ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-  ---------------------------------------------------------------------------*)
+let () =
+  (* numbered placeholders *)
+  let f1 = fun a b -> a * b in
+  let fg1 = [%f _1 * _2] in
+  assert (f1 2 4 = fg1 2 4)
+
+let () =
+  (* numbered placeholders, skip *)
+  let f1 = fun a _b c -> a * c in
+  let fg1 = [%f _1 * _3] in
+  assert (f1 2 9 4 = fg1 2 0 4)
+
+let () =
+  (* drop args *)
+  let f1 = fun _ -> 42 in
+  let fg1 = [%f_ 42] in
+  assert (f1 1 = fg1 2)
+
+let () =
+  print_endline "Tests passed"
