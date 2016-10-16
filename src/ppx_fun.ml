@@ -89,7 +89,7 @@ let replace_and_count_placeholders_in_args prefix args =
   in
   (context, List.rev new_args)
 
-let ppx_fun_expander
+let ppx_fun_expander_args
       ~loc ~path:_
       (func:Parsetree.expression)
       (args:(Asttypes.arg_label * Parsetree.expression) list) =
@@ -116,12 +116,26 @@ let ppx_fun_expander
          let pat = pvar ~loc name' in
          [%expr fun [%p pat] -> [%e exp]])
 
+let ppx_fun_expander_drop
+      ~loc ~path:_
+      (func:Parsetree.expression)
+      (args:(Asttypes.arg_label * Parsetree.expression) list) =
+  let inner = pexp_apply ~loc func args in
+  [%expr fun _ -> [%e inner]]
 
-let ppx_fun =
+let ppx_fun_args =
   Extension.V2.declare "f"
                        Extension.Context.expression
                        Ast_pattern.(pstr (pstr_eval
                                             (pexp_apply __ __) nil ^:: nil))
-                       ppx_fun_expander
+                       ppx_fun_expander_args
 
-let extensions = [ppx_fun]
+let ppx_fun_drop =
+  Extension.V2.declare "f_"
+                       Extension.Context.expression
+                       Ast_pattern.(pstr (pstr_eval
+                                            (pexp_apply __ __) nil ^:: nil))
+                       ppx_fun_expander_drop
+
+let extensions = [ppx_fun_args;
+                  ppx_fun_drop]
