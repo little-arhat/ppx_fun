@@ -37,6 +37,14 @@ ppx_fun can be installed with `opam`:
 
     opam install ppx_fun
 
+## Usage
+
+Add `ppx_fun` as dependency to your `opam` file, and this to your `_tags`:
+
+```
+<src/*.ml>: package(ppx_fun)
+```
+
 ## Differences with ppx_lambda
 
 [ppx_lambda](https://github.com/rizo/ppx_lambda) is another ppx rewriter with aim to provide lightweight
