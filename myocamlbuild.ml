@@ -4,7 +4,7 @@ let () = dispatch (
   function
   | After_rules ->
      flag ["ocaml"; "compile"; "use_ppx_fun"] &
-       S[A"-ppx"; A("./bin/ppx_fun_bin.native -as-ppx")];
+       S[A"-ppx"; A("./src/ppx_fun.native")];
      (* Pass -predicates to ocamldep *)
      pflag ["ocaml"; "ocamldep"] "predicate" (fun s -> S [A "-predicates"; A s])
 

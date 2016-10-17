@@ -5,9 +5,8 @@ test: build
 	ocaml pkg/pkg.ml test
 
 build:
-# cp pkg/META.in pkg/META
 	ocaml pkg/pkg.ml build --tests true
-	ln -fs _build/bin/ppx_fun_bin.native ./ppx_fun.native
+	ln -fs _build/src/ppx_fun.native ./ppx_fun.native
 
 $(NAME).install:
 	$(MAKE) build

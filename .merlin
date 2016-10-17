@@ -1,5 +1,5 @@
 S src
 S test
 B _build/**
-PKG compiler-libs.common ppx_tools.metaquot ppx_core topkg ppx_driver
+PKG compiler-libs.common ppx_tools.metaquot ppx_core topkg
 FLG -w @5@8@9@10@11@12@14@15@16@23@24@25@26@27@29@33@40

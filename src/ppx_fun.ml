@@ -79,19 +79,9 @@ let replace_and_count_placeholders prefix =
 let replace_and_count_placeholders_in_expr prefix expr =
   let mapper = replace_and_count_placeholders prefix in
   let init = {used=[]; highest=None} in
-  (* let (context, new_args) = *)
-  (*   List.fold_left *)
-  (*     args ~init *)
-  (*     ~f:(fun (context, collected_args) (al, expr) -> *)
-  (*       let (new_expr, new_context) = mapper#expression expr context in *)
-  (*       let new_args = (al, new_expr)::collected_args in *)
-  (*       (new_context, new_args)) *)
-  (* in *)
   mapper#expression expr init
 
-let ppx_fun_expander_args
-      ~loc ~path:_
-      (expr:Parsetree.expression) =
+let ppx_fun_expander_args ~loc (expr:Parsetree.expression) =
   let line = loc.Location.loc_start.Lexing.pos_lnum in
   let prefix = Printf.sprintf "l_%d_v" line in
   let (inner, context) = replace_and_count_placeholders_in_expr
@@ -116,28 +106,29 @@ let ppx_fun_expander_args
          let pat = pvar ~loc name' in
          [%expr fun [%p pat] -> [%e exp]])
 
-let ppx_fun_expander_drop
-      ~loc ~path:_
-      (expr:Parsetree.expression) =
+let ppx_fun_expander_drop ~loc (expr:Parsetree.expression) =
   [%expr fun _ -> [%e expr]]
 
-let ppx_fun_args =
-  Extension.V2.declare "f"
-                       Extension.Context.expression
-                       Ast_pattern.(pstr (pstr_eval __  nil ^:: nil))
-                       ppx_fun_expander_args
+let parse_payload ~loc payload parse_expr = match payload with
+  | PStr [{ pstr_desc =
+              Pstr_eval ({ pexp_loc = loc; _} as expr, _); _ }] ->
+     parse_expr ~loc expr
+  | _ -> Location.raise_errorf ~loc "ppx_fun: expecting expression inside"
 
-let ppx_fun_drop =
-  Extension.V2.declare "f_"
-                       Extension.Context.expression
-                       Ast_pattern.(pstr (pstr_eval __ nil ^:: nil))
-                       ppx_fun_expander_drop
+let ppx_fun_expander =
+  object (_self)
+    inherit Ast_traverse.map as super
 
-let extensions = [ppx_fun_args;
-                  ppx_fun_drop]
+    method! expression e =
+      let e' = super#expression e in
+      match e'.pexp_desc with
+      | Pexp_extension ({ txt = "f"; loc }, pstr) ->
+         parse_payload ~loc pstr ppx_fun_expander_args
+      | Pexp_extension ({ txt = "f_"; loc }, pstr) ->
+         parse_payload ~loc pstr ppx_fun_expander_drop
+      | _ -> e'
+  end
 
 let () =
-  Ppx_driver.register_transformation
-    "ppx-fun"
-    (* XXX: can't use ~rules, because there is no fresh ppx_driver for 4.03 *)
-    ~extensions:extensions
+  let mapper = Ast_traverse.ast_mapper_of_map ppx_fun_expander in
+  Ast_mapper.register "fun" (fun _argv -> mapper)
