@@ -6,6 +6,12 @@ let () =
   assert  (f1 3 = fg1 3)
 
 let () =
+  (* unary func *)
+  let f1 = fun () -> "test" in
+  let fg1 = [%f "test"] in
+  assert (f1 () = fg1 ())
+
+let () =
   (* N anonymous placeholders *)
   let f1 = fun a -> a * a in
   let fg1 = [%f __ * __] in

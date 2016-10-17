@@ -76,28 +76,27 @@ let replace_and_count_placeholders prefix =
 
   end
 
-let replace_and_count_placeholders_in_args prefix args =
+let replace_and_count_placeholders_in_expr prefix expr =
   let mapper = replace_and_count_placeholders prefix in
-  let init = ({used=[]; highest=None}, []) in
-  let (context, new_args) =
-    List.fold_left
-      args ~init
-      ~f:(fun (context, collected_args) (al, expr) ->
-        let (new_expr, new_context) = mapper#expression expr context in
-        let new_args = (al, new_expr)::collected_args in
-        (new_context, new_args))
-  in
-  (context, List.rev new_args)
+  let init = {used=[]; highest=None} in
+  (* let (context, new_args) = *)
+  (*   List.fold_left *)
+  (*     args ~init *)
+  (*     ~f:(fun (context, collected_args) (al, expr) -> *)
+  (*       let (new_expr, new_context) = mapper#expression expr context in *)
+  (*       let new_args = (al, new_expr)::collected_args in *)
+  (*       (new_context, new_args)) *)
+  (* in *)
+  mapper#expression expr init
 
 let ppx_fun_expander_args
       ~loc ~path:_
-      (func:Parsetree.expression)
-      (args:(Asttypes.arg_label * Parsetree.expression) list) =
+      (expr:Parsetree.expression) =
   let line = loc.Location.loc_start.Lexing.pos_lnum in
   let prefix = Printf.sprintf "l_%d_v" line in
-  let (context, new_args) = replace_and_count_placeholders_in_args
-                              prefix args in
-  let inner = pexp_apply ~loc func new_args in
+  let (inner, context) = replace_and_count_placeholders_in_expr
+                           prefix expr in
+  (* let inner = pexp_apply ~loc func new_args in *)
   match context.highest with
   | None ->
      (* without placeholders*)
@@ -125,8 +124,7 @@ let ppx_fun_expander_drop
 let ppx_fun_args =
   Extension.V2.declare "f"
                        Extension.Context.expression
-                       Ast_pattern.(pstr (pstr_eval
-                                            (pexp_apply __ __) nil ^:: nil))
+                       Ast_pattern.(pstr (pstr_eval __  nil ^:: nil))
                        ppx_fun_expander_args
 
 let ppx_fun_drop =
