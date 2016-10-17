@@ -6,7 +6,6 @@ tmp
 *.install
 *.native
 *.byte
-pkg/META
 ppx_fun.install
 ppx_fun.native
 ppx_expect

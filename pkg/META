@@ -1,0 +1,11 @@
+version = "%%VERSION_NUM%%"
+description = "shorthand syntax for anonymous functions"
+requires = "compiler-libs.common ppx_core ppx_driver"
+
+archive(ppx_driver, byte  ) = "ppx_fun.cma"
+archive(ppx_driver, native) = "ppx_fun.cmxa"
+plugin(ppx_driver, byte  ) = "ppx_fun.cma"
+plugin(ppx_driver, native) = "ppx_.cmxsun"
+exists_if = "ppx_fun.cma"
+
+ppx(-ppx_driver,-custom_ppx) = "./ppx_fun -as-ppx"

@@ -135,3 +135,9 @@ let ppx_fun_drop =
 
 let extensions = [ppx_fun_args;
                   ppx_fun_drop]
+
+let () =
+  Ppx_driver.register_transformation
+    "ppx-fun"
+    (* XXX: can't use ~rules, because there is no fresh ppx_driver for 4.03 *)
+    ~extensions:extensions

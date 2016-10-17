@@ -1,5 +1,5 @@
 opam-version: "1.2"
-"version": "0.0.1"
+version: "0.0.1"
 maintainer: "Roma Sokolov <sokolov.r.v@gmail.com>"
 authors: ["Roma Sokolov <sokolov.r.v@gmail.com>"]
 homepage: "https://github.com/little-arhat/ppx_fun"
