@@ -10,7 +10,6 @@ bug-reports: "https://github.com/little-arhat/ppx_fun/issues"
 tags: []
 available: [ ocaml-version >= "4.03.0"]
 depends: [
-  "ppx_driver"
   "ppx_core"
   "ocamlfind" {build}
   "ocamlbuild" {build}
