@@ -1,6 +1,5 @@
 open StdLabels
-open Ppx_core.Std
-open Parsetree
+open Ppx_core.Light
 open Asttypes
 open Ast_builder.Default
 
@@ -129,6 +128,16 @@ let ppx_fun_expander =
       | _ -> e'
   end
 
+
+(* XXX: Ast_traverse.ast_mapper_of_map was for some reason removed from
+   ppx_core, so here is hackish attempt to replace it, see
+   https://github.com/janestreet/ppx_core/issues/10 *)
+let ast_mapper_of_map (map : #map) : Ast_mapper.mapper =
+  let open Ast_mapper in
+  { default_mapper with
+    expr = fun _ -> Ppx_ast.Selected_ast.to_ocaml_mapper
+                      Ppx_ast.Selected_ast.Type.Expression map#expression}
+
 let () =
-  let mapper = Ast_traverse.ast_mapper_of_map ppx_fun_expander in
+  let mapper = ast_mapper_of_map ppx_fun_expander in
   Ast_mapper.register "fun" (fun _argv -> mapper)
