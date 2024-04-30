@@ -1,0 +1,8 @@
+(library
+  (name ppx_fun)
+  (kind ppx_rewriter)
+  (public_name ppx_fun)
+  (ppx_runtime_libraries )
+  (flags :standard -safe-string)
+  (libraries ppxlib)
+  (preprocess (pps ppxlib.metaquot)))

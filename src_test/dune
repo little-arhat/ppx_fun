@@ -1,0 +1,8 @@
+(executable
+  (name test_ppx_fun)
+  (preprocess (pps ppx_fun)))
+
+(rule
+ (alias runtest)
+ (action
+  (run ./test_ppx_fun.exe)))

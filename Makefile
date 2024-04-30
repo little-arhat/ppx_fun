@@ -1,19 +1,20 @@
 NAME := ppx_fun
 PREFIX = $(shell opam config var prefix)
-
-test: build
-	ocaml pkg/pkg.ml test
+RUNNER := dune
 
 build:
-	ocaml pkg/pkg.ml build --tests true
-	ln -fs _build/src/ppx_fun.native ./ppx_fun.native
+	$(RUNNER) build
+
+test:
+	$(RUNNER) runtest
 
 $(NAME).install:
 	$(MAKE) build
 
 clean:
-	ocamlbuild -clean
+	$(RUNNER) clean
 	rm -f $(NAME).install
+	rm -f $(NAME)-tests.install
 
 install: $(NAME).install
 	opam-installer -i --prefix $(PREFIX) $(NAME).install
@@ -25,10 +26,12 @@ reinstall: $(NAME).install
 	opam-installer -u --prefix $(PREFIX) $(NAME).install &> /dev/null || true
 	opam-installer -i --prefix $(PREFIX) $(NAME).install
 
+.PHONY: build driver test clean
 
-VERSION      := $$(opam query --version)
-NAME_VERSION := $$(opam query --name-version)
-ARCHIVE      := $$(opam query --archive)
+
+VERSION      := $$(opam query --version ppx_fun.opam)
+NAME_VERSION := $$(opam query --name-version ppx_fun.opam)
+ARCHIVE      := $$(opam query --archive ppx_fun.opam)
 
 release:
 	git tag -a v$(VERSION) -m "Version $(VERSION)."
@@ -37,4 +40,4 @@ release:
 # opam publish submit $(NAME_VERSION)
 # rm -rf $(NAME_VERSION)
 
-.PHONY: test
+.PHONY: release
